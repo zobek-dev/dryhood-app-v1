@@ -1,0 +1,8 @@
+node_modules
+src/**
+.gitignore
+package.json
+tsconfig.json
+vite.config.json
+.prettierrc.yaml
+.vscode
