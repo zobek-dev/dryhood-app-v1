@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
-import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig({
   root: './src',
@@ -16,17 +15,7 @@ export default defineConfig({
       }
     }
   },
-  plugins: [
-    react(),
-    tailwindcss({
-      content: [
-        './src/**/*.{js,jsx,ts,tsx,html,liquid}', // Incluye archivos React y Liquid
-        '../blocks/*.liquid', // Escanea archivos Liquid en la carpeta blocks/
-        '../sections/*.liquid' // Escanea archivos Liquid en la carpeta sections/
-      ],
-      debug: true
-    })
-  ],
+  plugins: [react() as any],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src')

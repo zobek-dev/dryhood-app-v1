@@ -45,10 +45,10 @@ export const Autocomplete = ({ onPlaceSelect }: Props) => {
   }, [onPlaceSelect, placeAutocomplete])
 
   return (
-    <div className="mh-relative mh-mb-4">
-      <div className="mh-absolute mh-inset-y-0 mh-start-0 mh-flex mh-items-center mh-ps-3 mh-pointer-events-none">
+    <div className="tw-relative tw-mb-4">
+      <div className="tw-absolute tw-inset-y-0 tw-start-0 tw-flex tw-items-center tw-ps-3 tw-pointer-events-none">
         <svg
-          className="mh-w-4 mh-h-4 mh-text-gray-500"
+          className="tw-w-4 tw-h-4 tw-text-gray-500"
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -64,7 +64,7 @@ export const Autocomplete = ({ onPlaceSelect }: Props) => {
       </div>
       <input
         type="search"
-        className="mh-block mh-w-full mh-p-4 mh-ps-10 mh-text-sm mh-text-gray-900 mh-border mh-border-gray-300 mh-rounded-lg mh-bg-gray-50 focus:!mh-ring-blue-500 focus:!mh-border-blue-500"
+        className="tw-block tw-w-full tw-p-4 tw-ps-10 tw-text-sm tw-text-gray-900 tw-border tw-border-gray-300 tw-rounded-lg tw-bg-gray-50 focus:!tw-ring-blue-500 focus:!tw-border-blue-500"
         placeholder="Busca la estación más cercana"
         ref={inputRef}
       />

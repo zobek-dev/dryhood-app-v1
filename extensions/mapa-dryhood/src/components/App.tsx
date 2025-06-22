@@ -61,9 +61,10 @@ import {
 import { LoadingSpinner } from './LoadingSpinner'
 import MapHandler from './MapHandler'
 import { Autocomplete } from './Autocomplete'
+import '../main.css'
 
-const API_KEY = 'AIzaSyASK2NgpEuybwdXCQTMrpjIe9gIdZLEXeY'
-const MAP_ID = 'eb5058168689ea47'
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+const MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID
 
 type Playa = {
   name: string
@@ -181,9 +182,8 @@ const App = () => {
   if (loading) {
     return (
       <div className="tw-h-[600px] md:tw-h-[500px] tw-flex tw-justify-center tw-flex-col tw-w-full tw-items-center tw-space-y-1">
-        Cargando mapa...
-        {/* <LoadingSpinner />
-        <span className="mh-text-center mh-text-sm mh-text-gray-300">Cargando mapa...</span> */}
+        <LoadingSpinner />
+        <span className="tw-text-center tw-text-sm tw-text-gray-300">Cargando mapa...</span>
       </div>
     )
   }
@@ -286,7 +286,7 @@ function PointsList({ points, itemRefs, handleMarkerClick, activeIndex }: any) {
   }
 
   return (
-    <div className="mh-block mh-space-y-1">
+    <div className="tw-block tw-space-y-1">
       {points &&
         points.map((point: any, index: number) => (
           <div
@@ -307,8 +307,8 @@ function PointsList({ points, itemRefs, handleMarkerClick, activeIndex }: any) {
                 {point.name}
               </h2>
               {/* <p
-                className={`mh-text-xs mh-font-light ${
-                  index === activeIndex ? 'mh-text-white' : ''
+                className={`tw-text-xs tw-font-light ${
+                  index === activeIndex ? 'tw-text-white' : ''
                 }`}>
                 {point.comuna}
               </p> */}

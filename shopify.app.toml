@@ -3,7 +3,7 @@
 client_id = "3c2a7418492562a64397b17ac9596654"
 name = "Dry Hood mapa playas v1"
 handle = "dry-hood-mapa-playas-v1"
-application_url = "https://lawsuit-maintain-textbook-carefully.trycloudflare.com"
+application_url = "https://plants-peter-occurred-julie.trycloudflare.com"
 embedded = true
 
 [build]
@@ -28,9 +28,9 @@ scopes = "write_products,write_content,write_online_store_pages"
 
 [auth]
 redirect_urls = [
-  "https://lawsuit-maintain-textbook-carefully.trycloudflare.com/auth/callback",
-  "https://lawsuit-maintain-textbook-carefully.trycloudflare.com/auth/shopify/callback",
-  "https://lawsuit-maintain-textbook-carefully.trycloudflare.com/api/auth/callback"
+  "https://plants-peter-occurred-julie.trycloudflare.com/auth/callback",
+  "https://plants-peter-occurred-julie.trycloudflare.com/auth/shopify/callback",
+  "https://plants-peter-occurred-julie.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

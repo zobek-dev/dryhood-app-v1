@@ -3,8 +3,7 @@ import React from 'react'
 export const LoadingSpinner = () => {
   return (
     <div role="status">
-      Loading...
-      {/* <svg
+      <svg
         aria-hidden="true"
         className="tw-w-8 tw-h-8 tw-text-gray-200 tw-animate-spin dark:tw-text-gray-600 tw-fill-blue-600"
         viewBox="0 0 100 101"
@@ -19,7 +18,7 @@ export const LoadingSpinner = () => {
           fill="currentFill"
         />
       </svg>
-      <span className="tw-sr-only">Loading...</span> */}
+      <span className="tw-sr-only">Loading...</span>
     </div>
   )
 }
