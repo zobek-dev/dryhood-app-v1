@@ -1,50 +1,3 @@
-// import React, { useEffect, useState } from 'react'
-// import { createRoot } from 'react-dom/client'
-// import './main.css'
-
-// type Playa = {
-//   name: string
-//   coordinates: {
-//     lon: number
-//     lat: number
-//   }
-//   slug?: string
-// }
-
-//
-
-// const App = () => {
-//   const [playas, setPlayas] = useState<Playa[]>([])
-
-//   useEffect(() => {
-//     const rootEl = document.getElementById('root')
-//     const rawData = rootEl?.getAttribute('data-playas')
-//     try {
-//       if (rawData) {
-//         const parsed = JSON.parse(rawData)
-//         setPlayas(parsed)
-//       }
-//     } catch (err) {
-//       console.error('Error parsing playas data:', err)
-//     }
-//   }, [])
-//   return (
-//     <div className="tw-p-4 tw-bg-yellow-100 tw-rounded-xl tw-text-center">
-//       <h1 className="tw-text-2xl tw-font-bold tw-text-yellow-800">
-//         Hola desde React + Tailwind + TS
-//       </h1>
-//       {/* <pre>{JSON.stringify(playas)}</pre> */}
-//       {/* <ul>
-//         {playas.map((playa, i) => (
-//           <li key={i}>
-//             <strong>{playa.name}</strong> — {playa.coordinates.join(', ')}
-//           </li>
-//         ))}
-//       </ul> */}
-//     </div>
-//   )
-// }
-
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import {
   APIProvider,
@@ -63,8 +16,20 @@ import MapHandler from './MapHandler'
 import { Autocomplete } from './Autocomplete'
 import '../main.css'
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
-const MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || process.env.VITE_GOOGLE_MAPS_API_KEY
+const MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || process.env.VITE_GOOGLE_MAPS_MAP_ID
+
+console.log('API_KEY', API_KEY)
+console.log('MAP_ID', MAP_ID)
+
+// Add validation
+if (!API_KEY) {
+  console.error('VITE_GOOGLE_MAPS_API_KEY is not defined in environment variables')
+}
+
+if (!MAP_ID) {
+  console.error('VITE_GOOGLE_MAPS_MAP_ID is not defined in environment variables')
+}
 
 type Playa = {
   name: string

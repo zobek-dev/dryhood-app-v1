@@ -3,6 +3,10 @@ src/**
 .gitignore
 package.json
 tsconfig.json
-vite.config.json
+vite.config.ts
 .prettierrc.yaml
 .vscode
+vite-env.d.ts
+tailwind.config.ts
+postcss.config.js
+.env
