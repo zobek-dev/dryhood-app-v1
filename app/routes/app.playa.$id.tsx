@@ -29,7 +29,7 @@ import {
 // import { type Beach } from '@prisma/client'
 
 import db from '../db.server'
-import { getBeach, createBeach } from '@/models/Beach.server'
+import { getBeach, createBeach, deleteBeach } from '@/models/Beach.server'
 
 export async function loader({ params }: LoaderFunctionArgs) {
   //const { admin } = await authenticate.admin(request)
@@ -52,8 +52,10 @@ export async function action({ request, params }: ActionFunctionArgs) {
     shop
   }
 
+  //{lat:-29.926468, lng:-71.2817856}
+
   if (data.action === 'delete') {
-    await db.beach.delete({ where: { id: params.id } })
+    await deleteBeach(params.id as string, admin.graphql, shop)
     return redirect('/app/playas')
   }
 

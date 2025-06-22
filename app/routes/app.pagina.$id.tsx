@@ -44,7 +44,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 }
 
 export async function action({ request, params }: ActionFunctionArgs) {
-  const { session } = await authenticate.admin(request)
+  const { session, admin } = await authenticate.admin(request)
   const { shop } = session
 
   const data = {
@@ -53,7 +53,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
   }
 
   if (data?.action === 'delete') {
-    await db.page.delete({ where: { id: params.id } })
+    await deleteBeach(params.id as string, admin.graphql)
     return redirect('/app/playas')
   }
 

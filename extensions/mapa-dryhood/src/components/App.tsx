@@ -169,7 +169,7 @@ const App = () => {
             />
           </div>
         </div>
-        <div className={`tw-w-full tw-h-[400px]`} style={{ height: '400px', width: '800px' }}>
+        <div className={`tw-w-full md:tw-w-8/12 tw-h-[400px] md:tw-h-[500px]`}>
           <Map
             id="gmap"
             defaultCenter={initialPosition}

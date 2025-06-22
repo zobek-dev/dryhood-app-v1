@@ -1,6 +1,8 @@
 import db from '../db.server'
-import { createPage } from './Page.server'
+import { createPage, deletePage } from './Page.server'
 import { parseCoordinates } from '@/utils'
+
+const PAGE_ID = 'gid://shopify/Page/112733946053'
 
 export async function getBeaches(shop: string) {
   const beachs = await db.beach.findMany({
@@ -25,13 +27,12 @@ export async function getBeach(id: string) {
 
 export async function createBeach(data: any, graphql: any) {
   const { name, shop } = data
-  console.log('name: ', name)
+  //console.log('name: ', name)
   try {
     const response = await db.beach.create({ data })
     if (response) {
       await createPage(name, shop, graphql, response.id)
-      await updateMapMetafield(data, graphql, shop)
-      // TODO: add new update the metafield for beach global points
+      await updateMapMetafield(graphql, shop)
       // structure: {name: string, coordinates: string, slug: string, city: string, reviews: string - soon}
       // simplified structure: {name:string, coordinates: {lat: string ,lon: string}, slug: string}}
     }
@@ -40,7 +41,32 @@ export async function createBeach(data: any, graphql: any) {
   }
 }
 
-export async function updateMapMetafield(data: any, graphql: any, shop: any) {
+export async function deleteBeach(id: string, graphql: any, shop: string) {
+  // Look for the register
+  try {
+    const element = await db.beach.findFirst({
+      where: { id },
+      include: {
+        page: true
+      }
+    })
+    console.log('Element', element)
+    if (!element) throw new Error("This beach doesn't exist")
+
+    //delete Shopify Page
+    await deletePage(element?.page?.shopifyId as string, graphql)
+    //Delete db page
+    await db.page.delete({ where: { id: element?.page?.id } })
+    //Delete db beach
+    await db.beach.delete({ where: { id } })
+    //update map metafield
+    await updateMapMetafield(graphql, shop)
+  } catch (error) {
+    console.error('Error:', error)
+  }
+}
+
+export async function updateMapMetafield(graphql: any, shop: any) {
   const metafield = await checkMetafield(graphql, {
     first: 1,
     ownerType: 'PAGE',
@@ -56,17 +82,9 @@ export async function updateMapMetafield(data: any, graphql: any, shop: any) {
     await createMetafieldDefinition(graphql)
     await createBeachDataMetafield(graphql, shop)
   } else {
-    console.log('Actualizar metafield')
-    //Get the current metafield values from the page
-    //update data from the in the metafield
-    //update
     await upsertBeachDataMetafield(graphql, shop)
     // await updateBeachDataMetafield(graphql, shop)
   }
-  // get the current metafield if is not created need to be created with all information from the data base
-  // in case if is exist need to append to last register for a new register
-  // in the case of delete need find the register and remove this
-  // the metafield will page.metafields.beach_map.value as a json
 }
 
 type MetafieldParams = {
@@ -162,7 +180,6 @@ export async function createMetafieldDefinition(graphql: any) {
 
 export async function createBeachDataMetafield(graphql: any, shop: any) {
   // hardcoded por ahora
-  const PAGE_ID = 'gid://shopify/Page/112733946053'
   const beaches = await db.beach.findMany({
     where: { shop },
     include: {
@@ -226,9 +243,8 @@ export async function createBeachDataMetafield(graphql: any, shop: any) {
   }
 }
 
+//update beach metafield inside the beach data
 export async function upsertBeachDataMetafield(graphql: any, shop: any) {
-  // hardcoded por ahora
-  const PAGE_ID = 'gid://shopify/Page/112733946053'
   const beaches = await db.beach.findMany({
     where: { shop },
     include: {
@@ -289,28 +305,3 @@ export async function upsertBeachDataMetafield(graphql: any, shop: any) {
     throw new Error('Error creating beach metafield for page')
   }
 }
-
-// mutation UpdatePageJsonMetafield {
-//   metafieldsSet(metafields: [
-//     {
-//       key: "your_key"
-//       namespace: "your_namespace"
-//       ownerId: "gid://shopify/Page/123456789"
-//       type: "json"
-//       value: "{\"foo\": \"bar\", \"baz\": 123}"
-//     }
-//   ]) {
-//     metafields {
-//       id
-//       namespace
-//       key
-//       type
-//       value
-//     }
-//     userErrors {
-//       field
-//       message
-//       code
-//     }
-//   }
-// }

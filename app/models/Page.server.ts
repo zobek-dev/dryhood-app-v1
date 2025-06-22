@@ -78,4 +78,28 @@ export async function createPage(name: string, shop: string, graphql: any, beach
   return created
 }
 
-export async function deletePage(pageId: string, graphql: any) {}
+export async function deletePage(pageId: string, graphql: any) {
+  const res = await graphql(
+    `
+      mutation DeletePage($id: ID!) {
+        pageDelete(id: $id) {
+          deletedPageId
+          userErrors {
+            code
+            field
+            message
+          }
+        }
+      }
+    `,
+    { variables: { id: pageId } }
+  )
+  const response = await res.json()
+  const resData = response?.data?.pageDelete?.deletedPageId
+  const userErrors = response?.data?.pageDelete?.userErrors
+
+  if (!resData || userErrors?.length) {
+    console.error('GraphQL Error:', userErrors)
+    throw new Error('Error deleteing page in Shopify')
+  }
+}
