@@ -4,6 +4,14 @@ import { parseCoordinates } from '@/utils'
 
 const PAGE_ID = 'gid://shopify/Page/112733946053'
 
+type MetafieldParams = {
+  first: number
+  ownerType: 'PRODUCT' | 'PAGE' | 'COLLECTION' | 'CUSTOMER' | 'ORDER' | string
+  namespace: string
+  key: string
+}
+
+//get all beaches from database
 export async function getBeaches(shop: string) {
   const beachs = await db.beach.findMany({
     where: { shop },
@@ -15,6 +23,7 @@ export async function getBeaches(shop: string) {
   return beachs
 }
 
+//get an unique beach from database
 export async function getBeach(id: string) {
   const beach = await db.beach.findFirst({
     where: { id }
@@ -25,6 +34,7 @@ export async function getBeach(id: string) {
   return beach
 }
 
+//create a beach in all instances
 export async function createBeach(data: any, graphql: any) {
   const { name, shop } = data
   //console.log('name: ', name)
@@ -41,6 +51,7 @@ export async function createBeach(data: any, graphql: any) {
   }
 }
 
+// delete a beach from all instances
 export async function deleteBeach(id: string, graphql: any, shop: string) {
   // Look for the register
   try {
@@ -66,34 +77,7 @@ export async function deleteBeach(id: string, graphql: any, shop: string) {
   }
 }
 
-export async function updateMapMetafield(graphql: any, shop: any) {
-  const metafield = await checkMetafield(graphql, {
-    first: 1,
-    ownerType: 'PAGE',
-    namespace: 'map_dryhood',
-    key: 'beach_data'
-  })
-
-  console.log('METAFIELD_VALIDATION:', metafield)
-
-  if (!metafield) {
-    console.log('Entramos a crear metafield desde cero')
-    //Create the metafield with all the information from the data base
-    await createMetafieldDefinition(graphql)
-    await createBeachDataMetafield(graphql, shop)
-  } else {
-    await upsertBeachDataMetafield(graphql, shop)
-    // await updateBeachDataMetafield(graphql, shop)
-  }
-}
-
-type MetafieldParams = {
-  first: number
-  ownerType: 'PRODUCT' | 'PAGE' | 'COLLECTION' | 'CUSTOMER' | 'ORDER' | string
-  namespace: string
-  key: string
-}
-
+//Check if a metafield exist
 export async function checkMetafield(
   graphql: any,
   { first, ownerType, namespace, key }: MetafieldParams
@@ -136,6 +120,7 @@ export async function checkMetafield(
   return definitions && definitions.length > 0
 }
 
+//Create metafield definition if its doesn't exist
 export async function createMetafieldDefinition(graphql: any) {
   const res = await graphql(
     `
@@ -178,6 +163,7 @@ export async function createMetafieldDefinition(graphql: any) {
   }
 }
 
+//Create metafield for beach page data
 export async function createBeachDataMetafield(graphql: any, shop: any) {
   // hardcoded por ahora
   const beaches = await db.beach.findMany({
@@ -243,7 +229,7 @@ export async function createBeachDataMetafield(graphql: any, shop: any) {
   }
 }
 
-//update beach metafield inside the beach data
+//update beach metafield for beach page data
 export async function upsertBeachDataMetafield(graphql: any, shop: any) {
   const beaches = await db.beach.findMany({
     where: { shop },
@@ -303,5 +289,27 @@ export async function upsertBeachDataMetafield(graphql: any, shop: any) {
   if (!response || userErrors?.length) {
     console.error('GraphQL Error:', userErrors)
     throw new Error('Error creating beach metafield for page')
+  }
+}
+
+//update metafield information validating if metafield exist or not
+export async function updateMapMetafield(graphql: any, shop: any) {
+  const metafield = await checkMetafield(graphql, {
+    first: 1,
+    ownerType: 'PAGE',
+    namespace: 'map_dryhood',
+    key: 'beach_data'
+  })
+
+  //console.log('METAFIELD_VALIDATION:', metafield)
+
+  if (!metafield) {
+    //console.log('Entramos a crear metafield desde cero')
+    //Create the metafield with all the information from the data base
+    await createMetafieldDefinition(graphql)
+    await createBeachDataMetafield(graphql, shop)
+  } else {
+    await upsertBeachDataMetafield(graphql, shop)
+    // await updateBeachDataMetafield(graphql, shop)
   }
 }

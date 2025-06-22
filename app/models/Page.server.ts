@@ -1,6 +1,7 @@
 import db from '../db.server'
 import { handleize } from '@/utils'
 
+//get all pages
 export async function getPages(shop: string) {
   const beachs = await db.page.findMany({
     where: { shop },
@@ -12,6 +13,7 @@ export async function getPages(shop: string) {
   return beachs
 }
 
+//get a page with the id
 export async function getPage(id: string) {
   const page = await db.page.findFirst({
     where: { id }
@@ -22,6 +24,7 @@ export async function getPage(id: string) {
   return page
 }
 
+//create a page in shopify and db
 export async function createPage(name: string, shop: string, graphql: any, beachId: string) {
   const res = await graphql(
     `
@@ -78,6 +81,7 @@ export async function createPage(name: string, shop: string, graphql: any, beach
   return created
 }
 
+//delete a page with the id
 export async function deletePage(pageId: string, graphql: any) {
   const res = await graphql(
     `
