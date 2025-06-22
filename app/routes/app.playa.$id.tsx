@@ -36,6 +36,7 @@ export async function loader({ params }: LoaderFunctionArgs) {
 
   if (params.id == 'new') {
     return {
+      id: null,
       name: '',
       coordinates: ''
     }
@@ -47,14 +48,14 @@ export async function action({ request, params }: ActionFunctionArgs) {
   const { session, admin } = await authenticate.admin(request)
   const { shop } = session
 
-  const data = {
+  const data: any = {
     ...Object.fromEntries(await request.formData()),
     shop
   }
 
   //{lat:-29.926468, lng:-71.2817856}
 
-  if (data.action === 'delete') {
+  if (data?.action === 'delete') {
     await deleteBeach(params.id as string, admin.graphql, shop)
     return redirect('/app/playas')
   }
