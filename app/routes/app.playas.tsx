@@ -1,20 +1,15 @@
 import {
-  //   Box,
   Card,
   Layout,
   Link,
-  //   List,
   Page,
   Text,
-  //Thumbnail,
   BlockStack,
   IndexTable,
   Button,
   InlineStack
-  //InlineStack
 } from '@shopify/polaris'
 import { Empty } from '@/components/global/EmptyState'
-//import { TitleBar } from '@shopify/app-bridge-react'
 import { useLoaderData, useNavigate } from '@remix-run/react'
 import { type LoaderFunctionArgs } from '@remix-run/node'
 import { authenticate } from '../shopify.server'
@@ -24,26 +19,64 @@ import { truncate } from '@/utils'
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const { session } = await authenticate.admin(request)
-  const rawBeaches = await getBeaches(session.shop) // Cambiamos el nombre para mayor claridad
+  const rawBeaches = await getBeaches(session.shop)
 
-  // Explicitly type rawBeaches if you know the structure before conversion
   const beaches: {
     name: string
     id: string
     shop: string
     coordinates: string
+    country: string
+    city: string
     pageId: string | null
-    createdAt: string | Date // Permitimos string o Date inicialmente
-    updatedAt: string | Date // Permitimos string o Date inicialmente
+    createdAt: string | Date
+    updatedAt: string | Date
   }[] = rawBeaches
 
   const parsedBeaches = beaches.map((beach) => ({
     ...beach,
     createdAt: beach.createdAt instanceof Date ? beach.createdAt : new Date(beach.createdAt),
     updatedAt: beach.updatedAt instanceof Date ? beach.updatedAt : new Date(beach.updatedAt)
-  })) as Beach[] // Aseguramos que el resultado sea del tipo Beach[]
+  })) as Beach[]
 
   return parsedBeaches
+}
+
+const formatCoordinates = (coordString: string): string => {
+  try {
+    // Try different parsing approaches
+    let coords
+
+    // First attempt: direct JSON parse with quote normalization
+    try {
+      coords = JSON.parse(coordString.replace(/'/g, '"'))
+    } catch (e) {
+      // Second attempt: try to parse string with relaxed format
+      const matches = coordString.match(/lat:\s*([-\d.]+)\s*,\s*lng:\s*([-\d.]+)/)
+      if (matches) {
+        coords = {
+          lat: parseFloat(matches[1]),
+          lng: parseFloat(matches[2])
+        }
+      }
+    }
+
+    // Validate the parsed coordinates
+    if (coords && typeof coords === 'object' && 'lat' in coords && 'lng' in coords) {
+      const lat = parseFloat(coords.lat)
+      const lng = parseFloat(coords.lng)
+      if (!isNaN(lat) && !isNaN(lng)) {
+        return `${lat.toFixed(6)}, ${lng.toFixed(6)}`
+      }
+    }
+
+    // If we can't parse it properly, return a formatted version of the raw string
+    return coordString.replace(/[{}']/g, '').trim()
+  } catch (e) {
+    // If all parsing fails, return a placeholder
+    console.error('Error parsing coordinates:', e)
+    return 'Formato inválido'
+  }
 }
 
 const BeachTable = ({ beaches }: { beaches: Beach[] }) => (
@@ -54,35 +87,40 @@ const BeachTable = ({ beaches }: { beaches: Beach[] }) => (
     }}
     itemCount={beaches.length}
     headings={[
-      { title: 'Thumbnail', hidden: true },
       { title: 'Nombre' },
-      { title: 'Ubicación' },
-      { title: 'Creada el' },
-      { title: 'Ultima actualizacón' }
+      { title: 'Ciudad' },
+      { title: 'País' },
+      { title: 'Coordenadas' },
+      { title: 'Última actualización' }
     ]}
     selectable={false}>
     {beaches?.map((beach, index) => <BeachTableRow key={beach.id} beach={beach} index={index} />)}
   </IndexTable>
 )
 
-const BeachTableRow = ({ beach, index }: { beach: Beach; index: number }) => (
-  <IndexTable.Row id={beach.id} position={index}>
-    <IndexTable.Cell>
-      {/* <Thumbnail source={qrCode.productImage || ImageIcon} alt={qrCode.productTitle} size="small" /> */}
-    </IndexTable.Cell>
-    <IndexTable.Cell>
-      <Link url={`/app/playa/${beach?.id}`}>{truncate(beach?.name)}</Link>
-    </IndexTable.Cell>
-    <IndexTable.Cell>{truncate(beach.name)}</IndexTable.Cell>
-    <IndexTable.Cell>{new Date(beach?.createdAt).toDateString()}</IndexTable.Cell>
-    <IndexTable.Cell>{new Date(beach?.updatedAt).toDateString()}</IndexTable.Cell>
-  </IndexTable.Row>
-)
+const BeachTableRow = ({ beach, index }: { beach: Beach; index: number }) => {
+  return (
+    <IndexTable.Row id={beach.id} position={index}>
+      <IndexTable.Cell>
+        <Link url={`/app/playa/${beach?.id}`}>{truncate(beach?.name)}</Link>
+      </IndexTable.Cell>
+      <IndexTable.Cell>{beach.city || '-'}</IndexTable.Cell>
+      <IndexTable.Cell>{beach.country || 'Chile'}</IndexTable.Cell>
+      <IndexTable.Cell>{formatCoordinates(beach.coordinates)}</IndexTable.Cell>
+      <IndexTable.Cell>
+        {new Date(beach?.updatedAt).toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}
+      </IndexTable.Cell>
+    </IndexTable.Row>
+  )
+}
 
 export default function PlayaPage() {
   const navigate = useNavigate()
   const loadedBeaches = useLoaderData<typeof loader>()
-  // Convert string dates back to Date objects
   const beaches = loadedBeaches.map((beach) => ({
     ...beach,
     createdAt: new Date(beach.createdAt),

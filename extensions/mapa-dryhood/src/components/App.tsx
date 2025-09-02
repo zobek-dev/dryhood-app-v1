@@ -16,8 +16,8 @@ import MapHandler from './MapHandler'
 import { Autocomplete } from './Autocomplete'
 import '../main.css'
 
-const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || process.env.VITE_GOOGLE_MAPS_API_KEY
-const MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID || process.env.VITE_GOOGLE_MAPS_MAP_ID
+const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+const MAP_ID = import.meta.env.VITE_GOOGLE_MAPS_MAP_ID
 
 console.log('API_KEY', API_KEY)
 console.log('MAP_ID', MAP_ID)
@@ -154,38 +154,42 @@ const App = () => {
   }
 
   return (
-    <APIProvider apiKey={API_KEY}>
-      <div className={`tw-flex tw-flex-col-reverse md:tw-flex-row tw-gap-4`}>
-        <div className={`tw-w-full md:tw-w-4/12`}>
-          <div>
-            <Autocomplete onPlaceSelect={setSelectedPlace} />
+    <>
+      {/* <pre>{JSON.stringify(API_KEY)}</pre>
+      <pre>{JSON.stringify(MAP_ID)}</pre> */}
+      <APIProvider apiKey={API_KEY}>
+        <div className={`tw-flex tw-flex-col-reverse md:tw-flex-row tw-gap-4`}>
+          <div className={`tw-w-full md:tw-w-4/12`}>
+            <div>
+              <Autocomplete onPlaceSelect={setSelectedPlace} />
+            </div>
+            <div className={`tw-overflow-y-scroll tw-flex-1 tw-max-h-[100px] md:tw-max-h-[430px]`}>
+              <PointsList
+                points={filteredPoints} // Mostrar los puntos filtrados
+                itemRefs={itemRefs}
+                handleMarkerClick={handleMarkerClick}
+                activeIndex={activeIndex}
+              />
+            </div>
           </div>
-          <div className={`tw-overflow-y-scroll tw-flex-1 tw-max-h-[100px] md:tw-max-h-[430px]`}>
-            <PointsList
-              points={filteredPoints} // Mostrar los puntos filtrados
-              itemRefs={itemRefs}
-              handleMarkerClick={handleMarkerClick}
-              activeIndex={activeIndex}
-            />
+          <div className={`tw-w-full md:tw-w-8/12 tw-h-[400px] md:tw-h-[500px]`}>
+            <Map
+              id="gmap"
+              defaultCenter={initialPosition}
+              defaultZoom={10}
+              mapTypeControl={false}
+              zoomControl={true}
+              streetViewControl={false}
+              mapId={MAP_ID}
+              disableDefaultUI={true}
+              fullscreenControl={false}>
+              <PoiMarkers pois={filteredPoints} onMarkerClick={handleMarkerClick} />
+              <MapHandler place={selectedPlace} />
+            </Map>
           </div>
         </div>
-        <div className={`tw-w-full md:tw-w-8/12 tw-h-[400px] md:tw-h-[500px]`}>
-          <Map
-            id="gmap"
-            defaultCenter={initialPosition}
-            defaultZoom={10}
-            mapTypeControl={false}
-            zoomControl={true}
-            streetViewControl={false}
-            mapId={MAP_ID}
-            disableDefaultUI={true}
-            fullscreenControl={false}>
-            <PoiMarkers pois={filteredPoints} onMarkerClick={handleMarkerClick} />
-            <MapHandler place={selectedPlace} />
-          </Map>
-        </div>
-      </div>
-    </APIProvider>
+      </APIProvider>
+    </>
   )
 }
 

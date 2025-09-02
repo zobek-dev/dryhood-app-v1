@@ -35,6 +35,8 @@ model Beach {
   id          String   @id @default(uuid())
   shop        String
   name        String
+  country     String
+  city        String
   coordinates String
   pageId      String?  @unique
   page        Page?    @relation(fields: [pageId], references: [id])
@@ -55,17 +57,23 @@ model Page {
 }
 
 model Review {
-  id        String   @id @default(uuid())
-  shop      String
-  userId    String
-  userEmail String
-  title     String
-  content   String
-  stars     Int
-  beachId   String
-  beach     Beach   @relation(fields: [beachId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  shop        String
+  userId      String
+  userEmail   String
+  userName    String
+  title       String   // Title should be validated in application code
+  content     String   // Content should be validated in application code
+  stars       Int
+  isPublished Boolean  @default(false)  // For moderation
+  images      String?  // Store image URLs as JSON string
+  beachId     String
+  beach       Beach    @relation(fields: [beachId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([shop, userId])  // Index for faster user-specific queries
+  @@index([beachId, isPublished])  // Index for fetching published reviews
 }
 
 //moderacion en el review

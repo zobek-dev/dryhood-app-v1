@@ -34,6 +34,7 @@ export async function createPage(name: string, shop: string, graphql: any, beach
             id
             title
             handle
+            templateSuffix
           }
           userErrors {
             code
@@ -49,7 +50,8 @@ export async function createPage(name: string, shop: string, graphql: any, beach
           title: name,
           handle: handleize(name),
           body: 'This is the content of the page.',
-          isPublished: true
+          isPublished: true,
+          templateSuffix: 'pagina-playa'
         }
       }
     }

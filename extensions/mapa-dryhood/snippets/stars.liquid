@@ -1,10 +1,71 @@
-{{ 'ratings.stars.label' | t }}:
+{% comment %}
+  Renders a star rating display
+  Accepts:
+  - rating: {Number} The rating value (between 0 and 5)
 
-{%- for i in (1..rating) -%}
-  ★
-{%- endfor -%}
-{%- assign blank_stars = 5 | minus: rating -%}
-{%- for i in (1..blank_stars) -%}
-  ☆
-{%- endfor -%}
+  Usage:
+  {% render 'stars', rating: product.rating %}
+{% endcomment %}
+
+<div class="stars" style="--stars-color: {{ block.settings.stars_color | default: '#FFD700' }}">
+  {% assign rating_decimal = rating | modulo: 1 %}
+  {% assign rating_whole = rating | minus: rating_decimal %}
+  
+  {% # Full stars %}
+  {% for i in (1..rating_whole) %}
+    <span class="star star--full">★</span>
+  {% endfor %}
+
+  {% # Partial star %}
+  {% if rating_decimal > 0 %}
+    <span class="star star--partial">
+      <span class="star-fill" style="width: {{ rating_decimal | times: 100 }}%">★</span>
+      <span class="star-empty">★</span>
+    </span>
+  {% endif %}
+
+  {% # Empty stars %}
+  {% assign empty_stars = 5 | minus: rating | floor %}
+  {% for i in (1..empty_stars) %}
+    <span class="star star--empty">★</span>
+  {% endfor %}
+</div>
+
+<style>
+.stars {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.star {
+  color: var(--stars-color);
+  position: relative;
+  display: inline-block;
+}
+
+.star--empty {
+  opacity: 0.3;
+}
+
+.star--partial {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+}
+
+.star--partial .star-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  color: var(--stars-color);
+}
+
+.star--partial .star-empty {
+  color: var(--stars-color);
+  opacity: 0.3;
+}
+</style>
 

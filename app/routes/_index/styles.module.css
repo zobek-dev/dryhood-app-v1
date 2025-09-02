@@ -1,3 +1,7 @@
+:root {
+  caret-color: #008060; /* Shopify's primary green color */
+}
+
 .index {
   align-items: center;
   display: flex;
