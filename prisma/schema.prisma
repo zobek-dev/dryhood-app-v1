@@ -5,12 +5,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Note that some adapters may set a maximum length for the String type by default, please ensure your strings are long
-// enough when changing adapters.
-// See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
+// PostgreSQL database configuration
 datasource db {
-  provider = "sqlite"
-  url      = "file:dev.sqlite"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
@@ -39,7 +37,7 @@ model Beach {
   city        String
   coordinates String
   pageId      String?  @unique
-  page        Page?    @relation(fields: [pageId], references: [id])
+  page        Page?    @relation(fields: [pageId], references: [id], onDelete: SetNull)
   reviews     Review[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -50,7 +48,7 @@ model Page {
   shop        String
   title       String
   slug        String 
-  shopifyId   String?   @unique
+  shopifyId   String?  @unique
   beach       Beach?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -68,12 +66,9 @@ model Review {
   isPublished Boolean  @default(false)  // For moderation
   images      String?  // Store image URLs as JSON string
   beachId     String
-  beach       Beach    @relation(fields: [beachId], references: [id])
+  beach       Beach    @relation(fields: [beachId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  @@index([shop, userId])  // Index for faster user-specific queries
-  @@index([beachId, isPublished])  // Index for fetching published reviews
 }
 
 //moderacion en el review

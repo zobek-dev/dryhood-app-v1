@@ -1,0 +1,27 @@
+# fly.toml app configuration file generated for dryhood-playas-map-v1-broken-pine-1678 on 2025-09-03T15:22:47-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'dryhood-playas-map-v1-broken-pine-1678'
+primary_region = 'gru'
+
+[env]
+  SHOPIFY_API_KEY='3c2a7418492562a64397b17ac9596654'
+  SHOPIFY_APP_URL='https://dryhood-playas-map-v1-broken-pine-1678.fly.dev'
+  SCOPES='write_content,write_online_store_pages,write_products'
+  HOST='0.0.0.0'
+  PORT='3000'
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
